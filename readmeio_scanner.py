@@ -8,10 +8,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import zipfile
 
-
-
-
-
 #Webdriver config which uses current session, allowing webdriver to skip login
 chrome_options = webdriver.ChromeOptions()
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -65,10 +61,7 @@ df = pd.read_csv(desired_file_path)
 
 #1.) SCAN DOCS VIEWED IN LAST X DAYS
 
-# df = pd.read_csv('docViews.csv')
-
 df['page'] = df['page'].apply(lambda x: x.rsplit('/', 1)[-1])
-
 
 page_list = df['page'].tolist()
 
@@ -78,9 +71,7 @@ page_string = '\n'.join(page_list)
 with open('viewed_docs_output.txt', 'w') as f:
     f.write(page_string)
     
-
 #2.) SCAN ALL DOCS
-
 
 driver.get("https://dash.readme.com/project/rackspace-test-1/v1.0/settings")
 
@@ -91,7 +82,6 @@ export_docs_button = WebDriverWait(driver, 10).until(
 export_docs_button.click()
 
 time.sleep(45)  # Adjust the wait time as needed
-
 
 desired_all_docs_name = "my_project_export.zip"  # Change this to your desired name
 desired_all_docs_path = os.path.join(script_directory, desired_all_docs_name)
@@ -152,7 +142,6 @@ with open('all_docs_output.txt', 'r') as file_all:
 
 with open('viewed_docs_output.txt', 'r') as file_viewed:
     viewed_pages = set(line.strip() for line in file_viewed)
-
 
 # Find items that are in all_pages but not in viewed_pages
 unviewed_pages = all_pages - viewed_pages
