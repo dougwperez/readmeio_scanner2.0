@@ -1,0 +1,7 @@
+venv/
+my_project_env/
+all_docs/
+all_docs_output.txt
+docViews.csv
+unviewed_docs.txt
+viewed_docs_output.txt
