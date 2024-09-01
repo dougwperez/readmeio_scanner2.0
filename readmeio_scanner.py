@@ -6,13 +6,22 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import configparser
 import zipfile
 
-#Webdriver config which uses current session, allowing webdriver to skip login
+# Create a ConfigParser object
+config = configparser.ConfigParser()
+config.read('config.ini')
+
+# Send email credentials
+readmeio_email = config['Credentials']['readmeio_email']
+readmeio_password = config['Credentials']['readmeio_password']
+
+print(readmeio_email)
+
 chrome_options = webdriver.ChromeOptions()
 script_directory = os.path.dirname(os.path.abspath(__file__))
-# GOING TO NEED TO CHANGE USER NAME, also depends on where they save chrome to!!!!!!!!!!!!!!!!!!
-chrome_options.add_argument("user-data-dir=/Users/doug5142/Library/Application Support/Google/Chrome/Default")
+# chrome_options.add_argument("user-data-dir=/Users/doug5142/Library/Application Support/Google/Chrome/Default")
 chrome_options.add_experimental_option('prefs', {
     "download.default_directory": script_directory,  # Set download directory to the script's directory
     "download.prompt_for_download": False,           # Disable download prompt
@@ -20,7 +29,34 @@ chrome_options.add_experimental_option('prefs', {
 })
 driver = webdriver.Chrome(options=chrome_options)
 
+driver.get("https://dash.readme.com/login")
+
+time.sleep(3) 
+
+
+email_input_element = WebDriverWait(driver, 10).until(
+   EC.element_to_be_clickable((By.ID, 'email')))
+
+email_input_element.send_keys(readmeio_email)
+
+password_input_element = WebDriverWait(driver, 10).until(
+   EC.element_to_be_clickable((By.ID, 'password')))
+
+password_input_element.send_keys(readmeio_password)
+
+time.sleep(2) 
+
+login_button = WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.XPATH, "//button[@type='submit' and .//span[text()='Log In']]"))
+)
+
+login_button.click()
+
+time.sleep(2) 
+
+
 driver.get("https://dash.readme.com/project/rackspace-test-1/v1.0/metrics/page-views#top-pages")
+
 
 # Wait until the first button is present and click it
 first_button = WebDriverWait(driver, 10).until(

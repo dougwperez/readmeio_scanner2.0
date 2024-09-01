@@ -5,3 +5,4 @@ all_docs_output.txt
 docViews.csv
 unviewed_docs.txt
 viewed_docs_output.txt
+config.ini
