@@ -9,30 +9,25 @@ from selenium.webdriver.support import expected_conditions as EC
 import configparser
 import zipfile
 
-# Create a ConfigParser object
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-# Send email credentials
 readmeio_email = config['Credentials']['readmeio_email']
 readmeio_password = config['Credentials']['readmeio_password']
-
-print(readmeio_email)
 
 chrome_options = webdriver.ChromeOptions()
 script_directory = os.path.dirname(os.path.abspath(__file__))
 # chrome_options.add_argument("user-data-dir=/Users/doug5142/Library/Application Support/Google/Chrome/Default")
 chrome_options.add_experimental_option('prefs', {
-    "download.default_directory": script_directory,  # Set download directory to the script's directory
-    "download.prompt_for_download": False,           # Disable download prompt
-    "safebrowsing.enabled": True                     # Enable safe browsing
+    "download.default_directory": script_directory,  
+    "download.prompt_for_download": False,          
+    "safebrowsing.enabled": True                    
 })
 driver = webdriver.Chrome(options=chrome_options)
 
 driver.get("https://dash.readme.com/login")
 
 time.sleep(3) 
-
 
 email_input_element = WebDriverWait(driver, 10).until(
    EC.element_to_be_clickable((By.ID, 'email')))
@@ -54,24 +49,19 @@ login_button.click()
 
 time.sleep(2) 
 
-
 driver.get("https://dash.readme.com/project/rackspace-test-1/v1.0/metrics/page-views#top-pages")
 
-
-# Wait until the first button is present and click it
 first_button = WebDriverWait(driver, 10).until(
     EC.element_to_be_clickable((By.XPATH, "//button[text()='Quarter']"))
 )
 first_button.click()
 
-# Now grab the second element (span with text 'Export CSV')
 export_button = WebDriverWait(driver, 10).until(
     EC.element_to_be_clickable((By.XPATH, "//*[@id='dashReact']/div[1]/div/main/div/div[4]/div[1]/button"))
 )
-
 export_button.click()
 
-time.sleep(25)  # Adjust the wait time as needed
+time.sleep(25)  
 
 desired_file_name = "docViews.csv"
 desired_file_path = os.path.join(script_directory, desired_file_name)
@@ -94,13 +84,10 @@ else:
 # Load the renamed CSV file into a DataFrame
 df = pd.read_csv(desired_file_path)
 
-
 #1.) SCAN DOCS VIEWED IN LAST X DAYS
-
 df['page'] = df['page'].apply(lambda x: x.rsplit('/', 1)[-1])
 
 page_list = df['page'].tolist()
-
 
 page_string = '\n'.join(page_list)
 
@@ -136,10 +123,8 @@ if zip_files:
     # Rename the ZIP file to the desired name
     os.rename(zip_file_path, desired_all_docs_path)
     print(f"File renamed to: {desired_all_docs_name}")
-       # Unzip the file to a directory named "unzipped_files" within the project directory
     unzip_directory = os.path.join(script_directory, "all_docs")
 
-    # Create the directory if it doesn't exist
     if not os.path.exists(unzip_directory):
         os.makedirs(unzip_directory)
 
@@ -155,7 +140,6 @@ all_docs = './all_docs'
 
 file_names = []
 
-# Walk through the directory recursively
 for root, dirs, files in os.walk(all_docs):
     for file in files:
         if file.endswith('.md'):  # Check if the file ends with '.md'
@@ -166,7 +150,6 @@ for root, dirs, files in os.walk(all_docs):
             
 output_file = 'all_docs_output.txt'
 
-# Write the file names to the output file
 with open(output_file, 'w') as f:
     for name in file_names:
         f.write(name + '\n')
@@ -179,10 +162,8 @@ with open('all_docs_output.txt', 'r') as file_all:
 with open('viewed_docs_output.txt', 'r') as file_viewed:
     viewed_pages = set(line.strip() for line in file_viewed)
 
-# Find items that are in all_pages but not in viewed_pages
 unviewed_pages = all_pages - viewed_pages
 
-# Save the result to a new file or print it
 with open('unviewed_docs.txt', 'w') as output_file:
     for page in unviewed_pages:
         output_file.write(page + '\n')
